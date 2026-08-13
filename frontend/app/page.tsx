@@ -1,69 +1,98 @@
-import Image from "next/image";
+'use client';
+
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
+import { RadiusSlider } from '@/components/radius-slider';
+import { SpotList } from '@/components/spot-list';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { fetchSpots } from '@/lib/api';
+import type { LatLng, Spot } from '@/lib/types';
+
+// Leafletはブラウザ専用（windowに依存）のためサーバーサイドレンダリングを無効化する
+const SpotMap = dynamic(() => import('@/components/map/spot-map'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full items-center justify-center text-gray-400">
+      地図を読み込み中…
+    </div>
+  ),
+});
+
+/** 初期表示は東京駅周辺（シードデータの中心エリア） */
+const INITIAL_CENTER: LatLng = { lat: 35.6812, lng: 139.7671 };
+const INITIAL_RADIUS_KM = 3;
 
 export default function Home() {
+  const [center, setCenter] = useState<LatLng>(INITIAL_CENTER);
+  const [radiusKm, setRadiusKm] = useState(INITIAL_RADIUS_KM);
+  const [spots, setSpots] = useState<Spot[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [focusedSpot, setFocusedSpot] = useState<Spot | null>(null);
+
+  // 地図移動・スライダー操作が止まってから検索する（API呼び出しの抑制）
+  const debouncedCenter = useDebouncedValue(center, 400);
+  const debouncedRadiusKm = useDebouncedValue(radiusKm, 300);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let aborted = false;
+    setLoading(true);
+    fetchSpots(
+      debouncedCenter.lat,
+      debouncedCenter.lng,
+      debouncedRadiusKm,
+      controller.signal,
+    )
+      .then((result) => {
+        setSpots(result);
+        setError(null);
+      })
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          aborted = true;
+          return;
+        }
+        setError('スポットの検索に失敗しました。');
+      })
+      .finally(() => {
+        if (!aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [debouncedCenter.lat, debouncedCenter.lng, debouncedRadiusKm]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="flex h-dvh flex-col">
+      <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-gray-200 bg-white px-4 py-3">
+        <h1 className="text-lg font-bold text-gray-900">スポット周辺検索</h1>
+        <div className="w-64">
+          <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <span className="text-sm text-gray-500">
+          {loading ? '検索中…' : `${spots.length}件`}
+        </span>
+      </header>
+      <div className="flex min-h-0 flex-1">
+        <div className="relative min-w-0 flex-1">
+          <SpotMap
+            initialCenter={INITIAL_CENTER}
+            center={debouncedCenter}
+            radiusKm={radiusKm}
+            spots={spots}
+            focusedSpot={focusedSpot}
+            onCenterChange={setCenter}
+          />
         </div>
-      </main>
-    </div>
+        <aside className="w-80 shrink-0 overflow-y-auto border-l border-gray-200 bg-white">
+          <SpotList
+            spots={spots}
+            loading={loading}
+            error={error}
+            focusedSpotId={focusedSpot?.id ?? null}
+            onSelect={setFocusedSpot}
+          />
+        </aside>
+      </div>
+    </main>
   );
 }
