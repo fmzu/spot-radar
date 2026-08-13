@@ -2,22 +2,19 @@
 
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
-import iconUrl from 'leaflet/dist/images/marker-icon.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import { Circle, MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { formatDistance } from '@/lib/format-distance';
 import type { LatLng, Spot } from '@/lib/types';
 import { FlyToSpot } from './fly-to-spot';
 import { MapMoveHandler } from './map-move-handler';
 
-// バンドラ経由だとLeaflet既定のマーカー画像パスが壊れるため明示設定する
-// （既定のURL解決関数が残っていると設定が無視されるため先に削除する）
+// バンドラ経由だとLeaflet既定のマーカー画像パスが壊れるため、
+// public/に配置した画像を直接参照する
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconUrl: iconUrl.src,
-  iconRetinaUrl: iconRetinaUrl.src,
-  shadowUrl: shadowUrl.src,
+  iconUrl: '/marker-icon.png',
+  iconRetinaUrl: '/marker-icon-2x.png',
+  shadowUrl: '/marker-shadow.png',
 });
 
 interface SpotMapProps {
