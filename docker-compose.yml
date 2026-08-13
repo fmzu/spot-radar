@@ -1,0 +1,53 @@
+services:
+  # ── データベース: PostgreSQL + PostGIS拡張 ─────────────────
+  db:
+    image: postgis/postgis:16-3.5
+    # 公式イメージはamd64のみ配布のため明示指定（Apple SiliconではRosettaで動作）
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: ${DB_USER:-app}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-app}
+      POSTGRES_DB: ${DB_NAME:-spots}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-app} -d ${DB_NAME:-spots}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  # ── バックエンドAPI: NestJS + TypeORM ────────────────────
+  api:
+    build: ./backend
+    environment:
+      DB_HOST: db
+      DB_PORT: '5432'
+      DB_USER: ${DB_USER:-app}
+      DB_PASSWORD: ${DB_PASSWORD:-app}
+      DB_NAME: ${DB_NAME:-spots}
+      PORT: '3001'
+      SEED_FILE: /app/seed/landit_coding_test_seed.csv
+    volumes:
+      - ./seed:/app/seed:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '3001:3001'
+
+  # ── フロントエンド: Next.js ──────────────────────────────
+  web:
+    build:
+      context: ./frontend
+      args:
+        # ブラウザからAPIを呼ぶURL（ビルド時にクライアントコードへ埋め込まれる）
+        NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - api
+    ports:
+      - '3000:3000'
+
+volumes:
+  db-data:
