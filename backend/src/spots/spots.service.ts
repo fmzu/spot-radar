@@ -1,18 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SpotWithDistanceDto } from './dto/spot-with-distance.dto';
 import { Spot } from './spot.entity';
-
-export interface SpotWithDistance {
-  id: number;
-  name: string;
-  category: string;
-  address: string;
-  lat: number;
-  lng: number;
-  /** 検索中心からの距離（メートル、四捨五入） */
-  distanceM: number;
-}
 
 @Injectable()
 export class SpotsService {
@@ -28,7 +18,7 @@ export class SpotsService {
     lat: number,
     lng: number,
     radiusKm: number,
-  ): Promise<SpotWithDistance[]> {
+  ): Promise<SpotWithDistanceDto[]> {
     const origin = 'ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography';
     const { entities, raw } = await this.spotRepository
       .createQueryBuilder('spot')

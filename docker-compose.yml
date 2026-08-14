@@ -29,6 +29,11 @@ services:
       DB_NAME: ${DB_NAME:-spots}
       PORT: '3001'
       SEED_FILE: /app/seed/landit_coding_test_seed.csv
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:3001/ || exit 1']
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - ./seed:/app/seed:ro
     depends_on:
@@ -45,7 +50,8 @@ services:
         # ブラウザからAPIを呼ぶURL（ビルド時にクライアントコードへ埋め込まれる）
         NEXT_PUBLIC_API_URL: http://localhost:3001
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     ports:
       - '3000:3000'
 

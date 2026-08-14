@@ -1,21 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { Type } from 'class-transformer';
-import { IsNumber, Max, Min } from 'class-validator';
+import { ReverseGeocodeQueryDto } from './dto/reverse-geocode-query.dto';
 import { GeocodingService } from './geocoding.service';
-
-class ReverseGeocodeQueryDto {
-  @Type(() => Number)
-  @IsNumber()
-  @Min(-90)
-  @Max(90)
-  lat!: number;
-
-  @Type(() => Number)
-  @IsNumber()
-  @Min(-180)
-  @Max(180)
-  lng!: number;
-}
 
 @Controller('geocoding')
 export class GeocodingController {

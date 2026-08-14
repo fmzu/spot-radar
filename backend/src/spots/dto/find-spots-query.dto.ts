@@ -15,10 +15,10 @@ export class FindSpotsQueryDto {
   @Max(180)
   lng!: number;
 
-  /** 検索半径（km）。UIのスライダー上限に合わせて最大50km */
+  /** 検索半径（km）。UIのスライダー上限に合わせて最大20km */
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
-  @Max(50)
+  @Max(20)
   radiusKm: number = 3;
 }

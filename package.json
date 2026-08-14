@@ -1,15 +1,11 @@
 {
   "name": "landit-coding-test",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "地図上で周辺のスポットを検索・閲覧できるWebアプリケーション",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:e2e": "playwright test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.62.1"
   }

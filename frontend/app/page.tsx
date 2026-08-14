@@ -1,16 +1,15 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AddressDisplay } from '@/components/address-display';
 import { RadiusSlider } from '@/components/radius-slider';
 import { SpotList } from '@/components/spot-list';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
-import { fetchSpots } from '@/lib/api';
-import { fetchAddress } from '@/lib/geocoding-api';
+import { useReverseGeocode } from '@/hooks/use-reverse-geocode';
+import { useSpotSearch } from '@/hooks/use-spot-search';
 import type { LatLng, Spot } from '@/lib/types';
 
-// Leafletはブラウザ専用のためサーバーサイドレンダリングを無効化する
 const SpotMap = dynamic(() => import('@/components/map/spot-map'), {
   ssr: false,
   loading: () => (
@@ -20,65 +19,26 @@ const SpotMap = dynamic(() => import('@/components/map/spot-map'), {
   ),
 });
 
-/** 初期表示は東京駅周辺 */
 const INITIAL_CENTER: LatLng = { lat: 35.6812, lng: 139.7671 };
 const INITIAL_RADIUS_KM = 3;
 
 export default function Home() {
   const [center, setCenter] = useState<LatLng>(INITIAL_CENTER);
   const [radiusKm, setRadiusKm] = useState(INITIAL_RADIUS_KM);
-  const [spots, setSpots] = useState<Spot[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [focusedSpot, setFocusedSpot] = useState<Spot | null>(null);
-  const [address, setAddress] = useState<string | null>(null);
-  const [addressLoading, setAddressLoading] = useState(false);
 
-  // 地図移動・スライダー操作が止まってから検索する
   const debouncedCenter = useDebouncedValue(center, 400);
   const debouncedRadiusKm = useDebouncedValue(radiusKm, 300);
 
-  // 周辺スポット検索
-  useEffect(() => {
-    const controller = new AbortController();
-    let aborted = false;
-    setLoading(true);
-    fetchSpots(
-      debouncedCenter.lat,
-      debouncedCenter.lng,
-      debouncedRadiusKm,
-      controller.signal,
-    )
-      .then((result) => {
-        setSpots(result);
-        setError(null);
-      })
-      .catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') {
-          aborted = true;
-          return;
-        }
-        setError('スポットの検索に失敗しました。');
-      })
-      .finally(() => {
-        if (!aborted) setLoading(false);
-      });
-    return () => controller.abort();
-  }, [debouncedCenter.lat, debouncedCenter.lng, debouncedRadiusKm]);
-
-  // 逆ジオコーディング（地図中心の住所取得）
-  useEffect(() => {
-    const controller = new AbortController();
-    setAddressLoading(true);
-    fetchAddress(debouncedCenter.lat, debouncedCenter.lng, controller.signal)
-      .then(setAddress)
-      .catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        setAddress(null);
-      })
-      .finally(() => setAddressLoading(false));
-    return () => controller.abort();
-  }, [debouncedCenter.lat, debouncedCenter.lng]);
+  const { spots, loading, error } = useSpotSearch(
+    debouncedCenter.lat,
+    debouncedCenter.lng,
+    debouncedRadiusKm,
+  );
+  const { address, loading: addressLoading } = useReverseGeocode(
+    debouncedCenter.lat,
+    debouncedCenter.lng,
+  );
 
   return (
     <main className="flex h-dvh flex-col">
@@ -87,7 +47,7 @@ export default function Home() {
         <div className="w-64">
           <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
         </div>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-gray-500" aria-live="polite">
           {loading ? '検索中…' : `${spots.length}件`}
         </span>
         <AddressDisplay address={address} loading={addressLoading} />
@@ -103,7 +63,10 @@ export default function Home() {
             onCenterChange={setCenter}
           />
         </div>
-        <aside className="w-80 shrink-0 overflow-y-auto border-l border-gray-200 bg-white">
+        <aside
+          className="w-80 shrink-0 overflow-y-auto border-l border-gray-200 bg-white"
+          aria-label="検索結果"
+        >
           <SpotList
             spots={spots}
             loading={loading}

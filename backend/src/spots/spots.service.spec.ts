@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Spot } from './spot.entity';
-import { SpotsService, SpotWithDistance } from './spots.service';
+import { SpotsService } from './spots.service';
 
 describe('SpotsService', () => {
   let service: SpotsService;
