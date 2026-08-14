@@ -1,19 +1,19 @@
 'use client';
 
-interface AddressDisplayProps {
+interface Props {
   address: string | null;
   loading: boolean;
 }
 
 /** 地図中心の住所をヘッダーに表示する */
-export function AddressDisplay({ address, loading }: AddressDisplayProps) {
+export function AddressDisplay(props: Props) {
   return (
     <span className="text-sm text-gray-600">
       📍{' '}
-      {loading ? (
+      {props.loading ? (
         <span className="text-gray-400">住所を取得中…</span>
       ) : (
-        address ?? ''
+        props.address ?? ''
       )}
     </span>
   );

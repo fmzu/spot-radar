@@ -17,7 +17,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: '/marker-shadow.png',
 });
 
-interface SpotMapProps {
+interface Props {
   initialCenter: LatLng;
   center: LatLng;
   radiusKm: number;
@@ -26,17 +26,10 @@ interface SpotMapProps {
   onCenterChange: (center: LatLng) => void;
 }
 
-export default function SpotMap({
-  initialCenter,
-  center,
-  radiusKm,
-  spots,
-  focusedSpot,
-  onCenterChange,
-}: SpotMapProps) {
+export default function SpotMap(props: Props) {
   return (
     <MapContainer
-      center={[initialCenter.lat, initialCenter.lng]}
+      center={[props.initialCenter.lat, props.initialCenter.lng]}
       zoom={14}
       className="h-full w-full"
     >
@@ -44,13 +37,12 @@ export default function SpotMap({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {/* 検索範囲の可視化（中心＝最後に検索した地点、半径＝スライダー値） */}
       <Circle
-        center={[center.lat, center.lng]}
-        radius={radiusKm * 1000}
+        center={[props.center.lat, props.center.lng]}
+        radius={props.radiusKm * 1000}
         pathOptions={{ color: '#2563eb', weight: 1, fillOpacity: 0.06 }}
       />
-      {spots.map((spot) => (
+      {props.spots.map((spot) => (
         <Marker key={spot.id} position={[spot.lat, spot.lng]}>
           <Popup>
             <span className="font-bold">{spot.name}</span>
@@ -61,8 +53,8 @@ export default function SpotMap({
           </Popup>
         </Marker>
       ))}
-      <MapMoveHandler onCenterChange={onCenterChange} />
-      <FlyToSpot spot={focusedSpot} />
+      <MapMoveHandler onCenterChange={props.onCenterChange} />
+      <FlyToSpot spot={props.focusedSpot} />
     </MapContainer>
   );
 }
