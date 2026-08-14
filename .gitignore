@@ -9,6 +9,9 @@ dist/
 .env
 .env.local
 
+# test
+test-results/
+
 # misc
 .DS_Store
 *.log

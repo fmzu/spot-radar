@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { GeocodingModule } from './geocoding/geocoding.module';
 import { SpotsModule } from './spots/spots.module';
 
@@ -22,6 +21,5 @@ import { SpotsModule } from './spots/spots.module';
     GeocodingModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
