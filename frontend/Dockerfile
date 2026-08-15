@@ -17,5 +17,8 @@ ENV NODE_ENV=production
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 appuser
+USER appuser
 EXPOSE 3000
 CMD ["node", "server.js"]
