@@ -6,31 +6,15 @@ body {
 
 /* 地図中心のクロスヘア */
 .map-crosshair::after {
-  content: '';
+  content: '+';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 24px;
-  height: 24px;
-  border: 2px solid #1d4ed8;
-  border-radius: 50%;
+  font-size: 24px;
+  line-height: 1;
+  color: #6b7280;
   pointer-events: none;
   z-index: 1000;
-  opacity: 0.6;
-}
-
-.map-crosshair::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 4px;
-  height: 4px;
-  background: #1d4ed8;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0.8;
+  opacity: 0.7;
 }
