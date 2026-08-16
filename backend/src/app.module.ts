@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { GeocodingModule } from './geocoding/geocoding.module';
@@ -6,6 +8,7 @@ import { SpotsModule } from './spots/spots.module';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST ?? 'localhost',
@@ -21,5 +24,6 @@ import { SpotsModule } from './spots/spots.module';
     GeocodingModule,
   ],
   controllers: [AppController],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
