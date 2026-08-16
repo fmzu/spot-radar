@@ -55,7 +55,7 @@ export default function Home() {
             focusedSpot={focusedSpot}
             onCenterChange={setCenter}
           />
-          <div className="absolute bottom-4 left-4 z-[1000]">
+          <div className="absolute left-2 top-20 z-[1000]">
             <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
           </div>
         </div>
