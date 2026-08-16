@@ -43,17 +43,7 @@ export default function Home() {
   return (
     <main className="flex h-dvh flex-col">
       <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
-        <div className="flex items-center gap-4">
-          <AddressDisplay address={address} loading={addressLoading} />
-          <div className="ml-auto flex items-center gap-4">
-            <div className="w-56">
-              <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
-            </div>
-            <span className="text-xs text-gray-400">
-              スポット周辺検索
-            </span>
-          </div>
-        </div>
+        <AddressDisplay address={address} loading={addressLoading} />
       </header>
       <div className="flex min-h-0 flex-1">
         <div className="map-crosshair relative min-w-0 flex-1">
@@ -65,6 +55,9 @@ export default function Home() {
             focusedSpot={focusedSpot}
             onCenterChange={setCenter}
           />
+          <div className="absolute bottom-4 left-4 z-[1000]">
+            <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
+          </div>
         </div>
         <aside
           className="flex w-80 shrink-0 flex-col border-l border-gray-200 bg-white"

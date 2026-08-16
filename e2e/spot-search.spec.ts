@@ -5,8 +5,8 @@ test.describe('スポット周辺検索', () => {
     await page.goto('/');
   });
 
-  test('アプリ名が表示される', async ({ page }) => {
-    await expect(page.locator('text=スポット周辺検索')).toBeVisible();
+  test('ページタイトルが設定されている', async ({ page }) => {
+    await expect(page).toHaveTitle('スポット周辺検索');
   });
 
   test('地図が表示される', async ({ page }) => {
