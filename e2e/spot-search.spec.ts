@@ -5,8 +5,8 @@ test.describe('スポット周辺検索', () => {
     await page.goto('/');
   });
 
-  test('ページタイトルが表示される', async ({ page }) => {
-    await expect(page.locator('h1')).toHaveText('スポット周辺検索');
+  test('アプリ名が表示される', async ({ page }) => {
+    await expect(page.locator('text=スポット周辺検索')).toBeVisible();
   });
 
   test('地図が表示される', async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe('スポット周辺検索', () => {
 
   test('半径スライダーを変更すると件数が変わる', async ({ page }) => {
     // 初期表示を待つ
-    const countLabel = page.locator('header span').filter({ hasText: /\d+件/ });
+    const countLabel = page.locator('aside span').filter({ hasText: /\d+件/ });
     await expect(countLabel).toBeVisible({ timeout: 10_000 });
     const initialText = await countLabel.textContent();
 

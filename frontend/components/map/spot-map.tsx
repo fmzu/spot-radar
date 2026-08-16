@@ -40,16 +40,20 @@ export default function SpotMap(props: Props) {
       <Circle
         center={[props.center.lat, props.center.lng]}
         radius={props.radiusKm * 1000}
-        pathOptions={{ color: '#2563eb', weight: 1, fillOpacity: 0.06 }}
+        pathOptions={{ color: '#2563eb', weight: 2, fillOpacity: 0.08 }}
       />
       {props.spots.map((spot) => (
         <Marker key={spot.id} position={[spot.lat, spot.lng]}>
           <Popup>
-            <span className="font-bold">{spot.name}</span>
-            <br />
-            {spot.category} / {spot.address}
-            <br />
-            中心から {formatDistance(spot.distanceM)}
+            <div className="flex flex-col gap-1">
+              <span className="font-bold">{spot.name}</span>
+              <span className="text-xs text-gray-500">
+                {spot.category} ・ {spot.address}
+              </span>
+              <span className="text-xs text-blue-600">
+                中心から {formatDistance(spot.distanceM)}
+              </span>
+            </div>
           </Popup>
         </Marker>
       ))}

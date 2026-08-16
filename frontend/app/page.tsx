@@ -42,18 +42,21 @@ export default function Home() {
 
   return (
     <main className="flex h-dvh flex-col">
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-gray-200 bg-white px-4 py-3">
-        <h1 className="text-lg font-bold text-gray-900">スポット周辺検索</h1>
-        <div className="w-64">
-          <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
+      <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-4">
+          <AddressDisplay address={address} loading={addressLoading} />
+          <div className="ml-auto flex items-center gap-4">
+            <div className="w-56">
+              <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
+            </div>
+            <span className="text-xs text-gray-400">
+              スポット周辺検索
+            </span>
+          </div>
         </div>
-        <span className="text-sm text-gray-500" aria-live="polite">
-          {loading ? '検索中…' : `${spots.length}件`}
-        </span>
-        <AddressDisplay address={address} loading={addressLoading} />
       </header>
       <div className="flex min-h-0 flex-1">
-        <div className="relative min-w-0 flex-1">
+        <div className="map-crosshair relative min-w-0 flex-1">
           <SpotMap
             initialCenter={INITIAL_CENTER}
             center={debouncedCenter}
@@ -64,16 +67,26 @@ export default function Home() {
           />
         </div>
         <aside
-          className="w-80 shrink-0 overflow-y-auto border-l border-gray-200 bg-white"
+          className="flex w-80 shrink-0 flex-col border-l border-gray-200 bg-white"
           aria-label="検索結果"
         >
-          <SpotList
-            spots={spots}
-            loading={loading}
-            error={error}
-            focusedSpotId={focusedSpot?.id ?? null}
-            onSelect={setFocusedSpot}
-          />
+          <div className="border-b border-gray-100 px-4 py-2.5">
+            <span className="text-sm font-medium text-gray-700">
+              周辺の観光スポット
+            </span>
+            <span className="ml-2 text-sm text-gray-400" aria-live="polite">
+              {loading ? '検索中…' : `${spots.length}件`}
+            </span>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <SpotList
+              spots={spots}
+              loading={loading}
+              error={error}
+              focusedSpotId={focusedSpot?.id ?? null}
+              onSelect={setFocusedSpot}
+            />
+          </div>
         </aside>
       </div>
     </main>
