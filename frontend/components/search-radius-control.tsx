@@ -6,7 +6,7 @@ type Props = {
 };
 
 /** 検索半径（km）を動的に変更するスライダー（地図上にオーバーレイ表示） */
-export function RadiusSlider(props: Props) {
+export function SearchRadiusControl(props: Props) {
   return (
     <div className="rounded-lg bg-white/90 px-3 py-2 shadow-md backdrop-blur-sm">
       <label className="flex items-center gap-2 text-sm text-gray-600">

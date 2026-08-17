@@ -2,8 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { AddressDisplay } from '@/components/address-display';
-import { RadiusSlider } from '@/components/radius-slider';
+import { MapCenterAddress } from '@/components/map-center-address';
+import { SearchRadiusControl } from '@/components/search-radius-control';
 import { SpotList } from '@/components/spot-list';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useReverseGeocode } from '@/hooks/use-reverse-geocode';
@@ -43,7 +43,7 @@ export default function Home() {
   return (
     <main className="flex h-dvh flex-col">
       <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
-        <AddressDisplay address={address} loading={addressLoading} />
+        <MapCenterAddress address={address} loading={addressLoading} />
       </header>
       <div className="flex min-h-0 flex-1">
         <div className="map-crosshair relative min-w-0 flex-1">
@@ -56,7 +56,7 @@ export default function Home() {
             onCenterChange={setCenter}
           />
           <div className="absolute bottom-4 left-4 z-[1000]">
-            <RadiusSlider radiusKm={radiusKm} onChange={setRadiusKm} />
+            <SearchRadiusControl radiusKm={radiusKm} onChange={setRadiusKm} />
           </div>
         </div>
         <aside

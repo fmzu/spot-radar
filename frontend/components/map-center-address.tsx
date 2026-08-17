@@ -6,7 +6,7 @@ type Props = {
 };
 
 /** 地図中心の住所をヘッダーに表示する */
-export function AddressDisplay(props: Props) {
+export function MapCenterAddress(props: Props) {
   return (
     <div className="flex items-center gap-2">
       <span className="text-blue-600">📍</span>

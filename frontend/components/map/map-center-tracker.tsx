@@ -8,7 +8,7 @@ type Props = {
 };
 
 /** 地図の移動が終わるたびに中心座標を親へ通知する */
-export function MapMoveHandler(props: Props) {
+export function MapCenterTracker(props: Props) {
   useMapEvents({
     moveend: (event) => {
       const center = event.target.getCenter();

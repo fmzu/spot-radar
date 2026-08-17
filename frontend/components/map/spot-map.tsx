@@ -5,8 +5,8 @@ import L from 'leaflet';
 import { Circle, MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { formatDistance } from '@/lib/format-distance';
 import type { LatLng, Spot } from '@/lib/types';
-import { FlyToSpot } from './fly-to-spot';
-import { MapMoveHandler } from './map-move-handler';
+import { SpotFocus } from './spot-focus';
+import { MapCenterTracker } from './map-center-tracker';
 
 // バンドラ経由だとLeaflet既定のマーカー画像パスが壊れるため、
 // public/に配置した画像を直接参照する
@@ -57,8 +57,8 @@ export default function SpotMap(props: Props) {
           </Popup>
         </Marker>
       ))}
-      <MapMoveHandler onCenterChange={props.onCenterChange} />
-      <FlyToSpot spot={props.focusedSpot} />
+      <MapCenterTracker onCenterChange={props.onCenterChange} />
+      <SpotFocus spot={props.focusedSpot} />
     </MapContainer>
   );
 }

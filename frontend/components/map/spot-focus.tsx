@@ -9,7 +9,7 @@ type Props = {
 };
 
 /** リストで選択されたスポットへ地図を移動する */
-export function FlyToSpot(props: Props) {
+export function SpotFocus(props: Props) {
   const map = useMap();
 
   useEffect(() => {
