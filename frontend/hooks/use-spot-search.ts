@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { fetchSpots } from '@/lib/api';
 import type { Spot } from '@/lib/types';
 
-interface UseSpotSearchResult {
+type UseSpotSearchResult = {
   spots: Spot[];
   loading: boolean;
   error: string | null;
-}
+};
 
 /** debounce済みの中心座標と半径で周辺スポットを検索する */
 export function useSpotSearch(
@@ -20,23 +20,20 @@ export function useSpotSearch(
 
   useEffect(() => {
     const controller = new AbortController();
-    let aborted = false;
     setLoading(true);
     fetchSpots(lat, lng, radiusKm, controller.signal)
       .then((result) => {
-        setSpots(result);
-        setError(null);
-      })
-      .catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') {
-          aborted = true;
-          return;
+        if (result instanceof Error) {
+          setError(result.message);
+        } else {
+          setSpots(result);
+          setError(null);
         }
-        setError('スポットの検索に失敗しました。');
       })
-      .finally(() => {
-        if (!aborted) setLoading(false);
-      });
+      .catch(() => {
+        // AbortErrorのみここに到達する
+      })
+      .finally(() => setLoading(false));
     return () => controller.abort();
   }, [lat, lng, radiusKm]);
 

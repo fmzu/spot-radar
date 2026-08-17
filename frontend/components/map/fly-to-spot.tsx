@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import type { Spot } from '@/lib/types';
 
-interface Props {
+type Props = {
   spot: Spot | null;
-}
+};
 
 /** リストで選択されたスポットへ地図を移動する */
 export function FlyToSpot(props: Props) {

@@ -1,9 +1,9 @@
 'use client';
 
-interface Props {
+type Props = {
   radiusKm: number;
   onChange: (radiusKm: number) => void;
-}
+};
 
 /** 検索半径（km）を動的に変更するスライダー（地図上にオーバーレイ表示） */
 export function RadiusSlider(props: Props) {

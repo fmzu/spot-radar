@@ -3,9 +3,9 @@
 import { useMapEvents } from 'react-leaflet';
 import type { LatLng } from '@/lib/types';
 
-interface Props {
+type Props = {
   onCenterChange: (center: LatLng) => void;
-}
+};
 
 /** 地図の移動が終わるたびに中心座標を親へ通知する */
 export function MapMoveHandler(props: Props) {

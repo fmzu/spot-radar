@@ -3,13 +3,13 @@
 import { formatDistance } from '@/lib/format-distance';
 import type { Spot } from '@/lib/types';
 
-interface Props {
+type Props = {
   spots: Spot[];
   loading: boolean;
   error: string | null;
   focusedSpotId: number | null;
   onSelect: (spot: Spot) => void;
-}
+};
 
 /** 検索結果のスポット一覧 */
 export function SpotList(props: Props) {
@@ -27,13 +27,15 @@ export function SpotList(props: Props) {
   }
   return (
     <ul className="divide-y divide-gray-100">
-      {props.spots.map((spot) => (
+      {props.spots.map((spot) => {
+        const isSelected = spot.id === props.focusedSpotId;
+        return (
         <li key={spot.id}>
           <button
             type="button"
             onClick={() => props.onSelect(spot)}
             className={`w-full cursor-pointer px-4 py-3 text-left transition-colors hover:bg-blue-50 ${
-              spot.id === props.focusedSpotId ? 'bg-blue-50' : ''
+              isSelected ? 'bg-blue-50' : ''
             }`}
           >
             <div className="flex items-baseline justify-between gap-2">
@@ -51,7 +53,8 @@ export function SpotList(props: Props) {
             </div>
           </button>
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }

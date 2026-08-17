@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { fetchAddress } from '@/lib/geocoding-api';
 
-interface UseReverseGeocodeResult {
+type UseReverseGeocodeResult = {
   address: string | null;
   loading: boolean;
-}
+};
 
 /** debounce済みの中心座標から住所を取得する */
 export function useReverseGeocode(
@@ -18,10 +18,15 @@ export function useReverseGeocode(
     const controller = new AbortController();
     setLoading(true);
     fetchAddress(lat, lng, controller.signal)
-      .then(setAddress)
-      .catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        setAddress(null);
+      .then((result) => {
+        if (result instanceof Error) {
+          setAddress(null);
+        } else {
+          setAddress(result);
+        }
+      })
+      .catch(() => {
+        // AbortErrorのみここに到達する
       })
       .finally(() => setLoading(false));
     return () => controller.abort();

@@ -1,9 +1,9 @@
 'use client';
 
-interface Props {
+type Props = {
   address: string | null;
   loading: boolean;
-}
+};
 
 /** 地図中心の住所をヘッダーに表示する */
 export function AddressDisplay(props: Props) {

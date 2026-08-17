@@ -17,14 +17,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: '/marker-shadow.png',
 });
 
-interface Props {
+type Props = {
   initialCenter: LatLng;
   center: LatLng;
   radiusKm: number;
   spots: Spot[];
   focusedSpot: Spot | null;
   onCenterChange: (center: LatLng) => void;
-}
+};
 
 export default function SpotMap(props: Props) {
   return (
