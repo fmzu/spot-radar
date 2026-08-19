@@ -14,8 +14,8 @@
 ### セットアップ
 
 ```bash
-git clone <リポジトリURL>
-cd <リポジトリ名>
+git clone https://github.com/fmzu/spot-radar.git
+cd spot-radar
 ```
 
 ## 2. 実行手順
